@@ -2,8 +2,11 @@
 
 import { DataTable } from '@/app/_components/data-table';
 import { useUsers, type User } from './use-users';
+import { useRouter } from 'next/navigation';
+
 
 export function UsersTable() {
+  const router = useRouter()
   const { data: users, isLoading, isError, error } = useUsers();
   console.log("users:", users)
 
@@ -22,6 +25,11 @@ export function UsersTable() {
         Failed to load users: {error instanceof Error ? error.message : 'Unknown error'}
       </p>
     );
+  }
+
+  const handleNavigateUserDetail = (row: User) => {
+    console.log('lalalalala')
+    router.push(`users/${row.id}`)
   }
 
   return (
@@ -53,6 +61,7 @@ export function UsersTable() {
           ),
         },
       ]}
+      onRowClicked={handleNavigateUserDetail}
     />
   );
 }

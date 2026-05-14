@@ -18,6 +18,7 @@ export type DataTableProps<T> = {
   pageSize?: number;
   searchPlaceholder?: string;
   emptyMessage?: string;
+  onRowClicked?: (row: T) => void;
 };
 
 type SortState = { key: string; dir: 'asc' | 'desc' } | null;
@@ -39,6 +40,7 @@ export function DataTable<T>({
   pageSize,
   searchPlaceholder = 'Search…',
   emptyMessage = 'No results',
+  onRowClicked,
 }: DataTableProps<T>) {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortState>(null);
@@ -166,7 +168,11 @@ export function DataTable<T>({
               </tr>
             ) : (
               paginated.map((row) => (
-                <tr key={getRowId(row)} className="hover:bg-gray-50">
+                <tr
+                  key={getRowId(row)}
+                  className={`${onRowClicked ? 'cursor-pointer hover:bg-gray-50' : 'hover:bg-gray-50'}`}
+                  onClick={() => onRowClicked?.(row)}
+                >
                   {columns.map((col) => (
                     <td key={col.key} className="px-6 py-4">
                       {renderCell(col, row)}
