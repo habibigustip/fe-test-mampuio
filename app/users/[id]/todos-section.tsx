@@ -55,7 +55,7 @@ export function TodosSection({ id }: Props) {
               type="button"
               onClick={() => setFilter(value)}
               aria-pressed={isActive}
-              className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full border text-xs font-medium cursor-pointer transition-colors ${
                 isActive
                   ? 'bg-blue-50 border-blue-500 text-blue-700'
                   : 'border-gray-300 text-gray-600 hover:bg-gray-50'

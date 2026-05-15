@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import {
   QueryClient,
@@ -49,12 +50,15 @@ export default async function UserDetailPage({ params }: Props) {
 
   return (
     <main className="container mx-auto p-6">
-      <Link
-        href="/users"
-        className="inline-flex items-center text-sm text-blue-600 hover:underline mb-6"
-      >
-        ← Back to users
-      </Link>
+      <div className='flex mb-4'>
+        <Link
+            href="/users"
+            className="inline-flex items-center text-sm hover:underline cursor-pointer border rounded-lg py-1 px-2"
+        >
+          <ChevronLeft width={16} /> Back
+        </Link>
+        <h1 className="text-2xl font-bold ml-2">Users Detail</h1>
+      </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <div className="space-y-6">
           <UserCard id={id} />
