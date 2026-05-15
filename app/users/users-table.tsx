@@ -1,7 +1,7 @@
 'use client';
 
 import { DataTable } from '@/app/_components/data-table';
-import { useUsers, type User } from './use-users';
+import { useUsers, type User } from '../_hooks/use-users';
 import { useRouter } from 'next/navigation';
 
 
