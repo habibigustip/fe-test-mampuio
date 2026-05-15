@@ -9,4 +9,5 @@ export function apiUrl(path: string): string {
 
 export const queryKeys = {
   users: ['users'] as const,
+  user: (id: number | string) => ['users', id] as const,
 } as const;
