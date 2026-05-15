@@ -1,6 +1,7 @@
 'use client';
 
 import { Card } from '@/app/_components/card';
+import { Skeleton } from '@/app/_components/skeleton';
 import { usePosts } from '@/app/_hooks/use-posts';
 import { useTodos } from '@/app/_hooks/use-todos';
 import type { UseQueryResult } from '@tanstack/react-query';
@@ -9,12 +10,7 @@ function CountBody({ query }: { query: UseQueryResult<unknown[]> }) {
   const { data, isLoading, isError, error } = query;
 
   if (isLoading) {
-    return (
-      <p className="text-sm text-gray-500 flex items-center gap-2">
-        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
-        Loading
-      </p>
-    );
+    return <Skeleton className="h-9 w-16" />;
   }
 
   if (isError) {

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useUserTodos } from '@/app/_hooks/use-user-todos';
 import { Check, Circle } from 'lucide-react';
+import { Skeleton } from '@/app/_components/skeleton';
 
 type Props = { id: string };
 
@@ -14,7 +15,7 @@ export function TodosSection({ id }: Props) {
   const { data: todos, isLoading, isError, error } = useUserTodos(id);
   const [filter, setFilter] = useState<Filter>('all');
 
-  if (isLoading) return <SectionFallback>Loading todos…</SectionFallback>;
+  if (isLoading) return <Skeleton className="h-96 w-full" />;
   if (isError) {
     return (
       <SectionFallback tone="error">

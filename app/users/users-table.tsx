@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { DataTable } from '@/app/_components/data-table';
+import { Skeleton } from '@/app/_components/skeleton';
 import { useUsers, type User } from '../_hooks/use-users';
 import { usePosts } from '@/app/_hooks/use-posts';
 import { useTodos } from '@/app/_hooks/use-todos';
@@ -37,12 +38,7 @@ export function UsersTable() {
   }, [posts.data, todos.data]);
 
   if (isLoading) {
-    return (
-      <p className="text-sm text-gray-500 flex  justify-center items-center gap-2">
-        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
-        Loading user
-      </p>
-    );
+    return <Skeleton className="h-96 w-full" />;
   }
 
   if (isError) {
