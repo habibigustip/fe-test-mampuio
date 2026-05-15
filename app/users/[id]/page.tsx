@@ -8,7 +8,11 @@ import {
 import { fetchJson } from '@/app/_hooks/use-fetch';
 import { apiUrl } from '@/app/_lib/api';
 import { prefetchUser, type UserDetail } from '../../_hooks/use-user';
+import { prefetchUserPosts } from '@/app/_hooks/use-user-posts';
+import { prefetchUserTodos } from '@/app/_hooks/use-user-todos';
 import { UserCard } from './user-card';
+import { PostsSection } from './posts-section';
+import { TodosSection } from './todos-section';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -37,7 +41,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function UserDetailPage({ params }: Props) {
   const { id } = await params;
   const queryClient = new QueryClient();
-  await prefetchUser(queryClient, id);
+  await Promise.all([
+    prefetchUser(queryClient, id),
+    prefetchUserPosts(queryClient, id),
+    prefetchUserTodos(queryClient, id),
+  ]);
 
   return (
     <main className="container mx-auto p-6">
@@ -48,7 +56,13 @@ export default async function UserDetailPage({ params }: Props) {
         ← Back to users
       </Link>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <UserCard id={id} />
+        <div className="space-y-6">
+          <UserCard id={id} />
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 [&>*]:min-w-0">
+            <PostsSection id={id} />
+            <TodosSection id={id} />
+          </div>
+        </div>
       </HydrationBoundary>
     </main>
   );

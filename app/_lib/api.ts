@@ -12,4 +12,6 @@ export const queryKeys = {
   user: (id: number | string) => ['users', id] as const,
   posts: ['posts'] as const,
   todos: ['todos'] as const,
+  userPosts: (id: number | string) => ['users', id, 'posts'] as const,
+  userTodos: (id: number | string) => ['users', id, 'todos'] as const,
 } as const;
