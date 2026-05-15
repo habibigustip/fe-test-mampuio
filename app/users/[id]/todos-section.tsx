@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useUserTodos } from '@/app/_hooks/use-user-todos';
 import { Check, Circle } from 'lucide-react';
+import { Skeleton } from '@/app/_components/skeleton';
 
 type Props = { id: string };
 
@@ -14,7 +15,7 @@ export function TodosSection({ id }: Props) {
   const { data: todos, isLoading, isError, error } = useUserTodos(id);
   const [filter, setFilter] = useState<Filter>('all');
 
-  if (isLoading) return <SectionFallback>Loading todos…</SectionFallback>;
+  if (isLoading) return <Skeleton className="h-96 w-full" />;
   if (isError) {
     return (
       <SectionFallback tone="error">
@@ -54,7 +55,7 @@ export function TodosSection({ id }: Props) {
               type="button"
               onClick={() => setFilter(value)}
               aria-pressed={isActive}
-              className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full border text-xs font-medium cursor-pointer transition-colors ${
                 isActive
                   ? 'bg-blue-50 border-blue-500 text-blue-700'
                   : 'border-gray-300 text-gray-600 hover:bg-gray-50'

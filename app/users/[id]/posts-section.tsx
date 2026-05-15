@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useUserPosts } from '@/app/_hooks/use-user-posts';
+import { Skeleton } from '@/app/_components/skeleton';
 
 type Props = { id: string };
 
@@ -19,7 +20,7 @@ export function PostsSection({ id }: Props) {
     });
   };
 
-  if (isLoading) return <SectionFallback>Loading posts…</SectionFallback>;
+  if (isLoading) return <Skeleton className="h-96 w-full" />;
   if (isError) {
     return (
       <SectionFallback tone="error">

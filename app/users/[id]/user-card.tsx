@@ -1,6 +1,7 @@
 'use client';
 
 import { Card } from '@/app/_components/card';
+import { Skeleton } from '@/app/_components/skeleton';
 import { useUser } from '../../_hooks/use-user';
 
 type Props = { id: string };
@@ -25,14 +26,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 export function UserCard({ id }: Props) {
   const { data: user, isLoading, isError, error } = useUser(id);
 
-  if (isLoading) {
-    return (
-      <p className="text-sm text-gray-500 flex justify-center items-center gap-2 py-12">
-        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
-        Loading user
-      </p>
-    );
-  }
+  if (isLoading) return <Skeleton className="h-96 w-full" />;
 
   if (isError) {
     return (

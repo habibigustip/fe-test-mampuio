@@ -1,22 +1,21 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
+import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 
 export type Column<T> = {
   key: string;
   header: string;
   accessor?: (row: T) => string;
   cell?: (row: T) => ReactNode;
-  sortable?: boolean;
+  sortable?: boolean | ((row: T) => number | string);
   searchable?: boolean;
-  sortValue?: (row: T) => number;
 };
 
 export type DataTableProps<T> = {
   items: T[];
   columns: Column<T>[];
   getRowId: (row: T) => string | number;
-  pageSize?: number;
   searchPlaceholder?: string;
   emptyMessage?: string;
   onRowClicked?: (row: T) => void;
@@ -38,14 +37,12 @@ export function DataTable<T>({
   items,
   columns,
   getRowId,
-  pageSize,
   searchPlaceholder = 'Search…',
   emptyMessage = 'No results',
   onRowClicked,
 }: DataTableProps<T>) {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortState>(null);
-  const [page, setPage] = useState(0);
 
   const hasSearchable = columns.some((c) => c.searchable);
 
@@ -68,37 +65,21 @@ export function DataTable<T>({
     const col = columns.find((c) => c.key === sort.key);
     if (!col) return filtered;
     const sign = sort.dir === 'asc' ? 1 : -1;
-    if (col.sortValue) {
-      const sortValue = col.sortValue;
-      return [...filtered].sort((a, b) => sign * (sortValue(a) - sortValue(b)));
+    if (typeof col.sortable === 'function') {
+      const sortValue = col.sortable;
+      return [...filtered].sort((a, b) => {
+        const av = sortValue(a);
+        const bv = sortValue(b);
+        if (typeof av === 'number' && typeof bv === 'number') {
+          return sign * (av - bv);
+        }
+        return sign * collator.compare(String(av), String(bv));
+      });
     }
     return [...filtered].sort(
       (a, b) => sign * collator.compare(getValue(col, a), getValue(col, b)),
     );
   }, [filtered, sort, columns, collator]);
-
-  const total = sorted.length;
-  const lastPage = pageSize ? Math.max(0, Math.ceil(total / pageSize) - 1) : 0;
-  const safePage = Math.min(page, lastPage);
-  const paginated = pageSize
-    ? sorted.slice(safePage * pageSize, safePage * pageSize + pageSize)
-    : sorted;
-  const showControls = pageSize !== undefined && total > pageSize;
-  const visibleStart = total === 0 ? 0 : pageSize ? safePage * pageSize + 1 : 1;
-  const visibleEnd = pageSize
-    ? Math.min(safePage * pageSize + pageSize, total)
-    : total;
-  const visibleLabel =
-    total === 0
-      ? '0'
-      : pageSize
-        ? `${visibleStart}–${visibleEnd}`
-        : String(total);
-
-  const onQueryChange = (v: string) => {
-    setQuery(v);
-    setPage(0);
-  };
 
   const cycleSort = (key: string) => {
     setSort((prev) => {
@@ -106,7 +87,6 @@ export function DataTable<T>({
       if (prev.dir === 'asc') return { key, dir: 'desc' };
       return null;
     });
-    setPage(0);
   };
 
   return (
@@ -117,22 +97,22 @@ export function DataTable<T>({
           aria-label={searchPlaceholder}
           placeholder={searchPlaceholder}
           value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          className="w-[20%] px-4 py-2 border rounded-lg focus:ring-blue-500"
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-full md:w-[25%] px-4 py-2 border border-gray-400 rounded-lg focus:border-none focus:ring-blue-500 bg-white"
         />
       )}
 
-      <div className="overflow-x-auto rounded-lg border">
+      <div className="overflow-x-auto rounded-lg border border-gray-400">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               {columns.map((col) => {
                 const isActive = sort?.key === col.key;
-                const indicator = isActive
+                const SortIcon = isActive
                   ? sort.dir === 'asc'
-                    ? ' ↑'
-                    : ' ↓'
-                  : '';
+                    ? ChevronUp
+                    : ChevronDown
+                  : ChevronsUpDown;
                 if (col.sortable) {
                   return (
                     <th
@@ -142,10 +122,16 @@ export function DataTable<T>({
                       <button
                         type="button"
                         onClick={() => cycleSort(col.key)}
-                        className="hover:underline"
+                        className="inline-flex items-center gap-1 hover:underline"
                       >
                         {col.header}
-                        {indicator}
+                        <SortIcon
+                          size={14}
+                          className={
+                            isActive ? 'text-gray-700' : 'text-gray-400'
+                          }
+                          aria-hidden="true"
+                        />
                       </button>
                     </th>
                   );
@@ -162,7 +148,7 @@ export function DataTable<T>({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {total === 0 ? (
+            {sorted.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
@@ -172,7 +158,7 @@ export function DataTable<T>({
                 </td>
               </tr>
             ) : (
-              paginated.map((row) => (
+              sorted.map((row) => (
                 <tr
                   key={getRowId(row)}
                   className={`${onRowClicked ? 'cursor-pointer hover:bg-gray-50' : 'hover:bg-gray-50'}`}
@@ -188,35 +174,6 @@ export function DataTable<T>({
             )}
           </tbody>
         </table>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          Showing {visibleLabel} of {total}
-        </p>
-        {showControls && (
-          <div className="flex items-center gap-2 text-sm">
-            <button
-              type="button"
-              disabled={safePage === 0}
-              onClick={() => setPage(safePage - 1)}
-              className="px-3 py-1 rounded border disabled:opacity-50"
-            >
-              ← Prev
-            </button>
-            <span>
-              Page {safePage + 1} of {lastPage + 1}
-            </span>
-            <button
-              type="button"
-              disabled={safePage >= lastPage}
-              onClick={() => setPage(safePage + 1)}
-              className="px-3 py-1 rounded border disabled:opacity-50"
-            >
-              Next →
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

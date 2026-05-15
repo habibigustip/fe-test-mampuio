@@ -8,7 +8,7 @@ type CardProps = {
 export function Card({ title, subtitle, children, className }: CardProps) {
   return (
     <section
-      className={`rounded-lg border border-gray-200 bg-white p-6 shadow-sm${className ? ` ${className}` : ''}`}
+      className={`rounded-lg border border-gray-200 bg-white p-6 shadow-md${className ? ` ${className}` : ''}`}
     >
       <header className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">{title}</h2>
