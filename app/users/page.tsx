@@ -3,7 +3,7 @@ import {
   dehydrate,
   HydrationBoundary,
 } from '@tanstack/react-query';
-import { prefetchUsers } from './use-users';
+import { prefetchUsers } from '../_hooks/use-users';
 import { UsersTable } from './users-table';
 
 export default async function UserPage() {
