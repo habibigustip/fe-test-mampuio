@@ -9,6 +9,7 @@ export type Column<T> = {
   cell?: (row: T) => ReactNode;
   sortable?: boolean;
   searchable?: boolean;
+  sortValue?: (row: T) => number;
 };
 
 export type DataTableProps<T> = {
@@ -67,6 +68,10 @@ export function DataTable<T>({
     const col = columns.find((c) => c.key === sort.key);
     if (!col) return filtered;
     const sign = sort.dir === 'asc' ? 1 : -1;
+    if (col.sortValue) {
+      const sortValue = col.sortValue;
+      return [...filtered].sort((a, b) => sign * (sortValue(a) - sortValue(b)));
+    }
     return [...filtered].sort(
       (a, b) => sign * collator.compare(getValue(col, a), getValue(col, b)),
     );
