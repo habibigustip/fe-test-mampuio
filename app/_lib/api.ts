@@ -10,4 +10,6 @@ export function apiUrl(path: string): string {
 export const queryKeys = {
   users: ['users'] as const,
   user: (id: number | string) => ['users', id] as const,
+  posts: ['posts'] as const,
+  todos: ['todos'] as const,
 } as const;
