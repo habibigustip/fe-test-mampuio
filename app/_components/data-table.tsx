@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
+import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 
 export type Column<T> = {
   key: string;
@@ -118,7 +119,7 @@ export function DataTable<T>({
           placeholder={searchPlaceholder}
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          className="w-[20%] px-4 py-2 border rounded-lg focus:ring-blue-500"
+          className="w-[20%] px-4 py-2 border rounded-lg focus:ring-blue-500 bg-white"
         />
       )}
 
@@ -128,11 +129,11 @@ export function DataTable<T>({
             <tr>
               {columns.map((col) => {
                 const isActive = sort?.key === col.key;
-                const indicator = isActive
+                const SortIcon = isActive
                   ? sort.dir === 'asc'
-                    ? ' ↑'
-                    : ' ↓'
-                  : '';
+                    ? ChevronUp
+                    : ChevronDown
+                  : ChevronsUpDown;
                 if (col.sortable) {
                   return (
                     <th
@@ -142,10 +143,16 @@ export function DataTable<T>({
                       <button
                         type="button"
                         onClick={() => cycleSort(col.key)}
-                        className="hover:underline"
+                        className="inline-flex items-center gap-1 hover:underline"
                       >
                         {col.header}
-                        {indicator}
+                        <SortIcon
+                          size={14}
+                          className={
+                            isActive ? 'text-gray-700' : 'text-gray-400'
+                          }
+                          aria-hidden="true"
+                        />
                       </button>
                     </th>
                   );
