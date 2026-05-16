@@ -1,6 +1,7 @@
 import type { User } from '@/app/_hooks/use-users';
 import type { Post } from '@/app/_hooks/use-posts';
 import type { Todo } from '@/app/_hooks/use-todos';
+import type { UserDetail } from '@/app/_hooks/use-user';
 
 export const usersFixture: User[] = [
   { id: 1, name: 'Ada Lovelace', email: 'ada@example.com', website: 'ada.dev' },
@@ -19,3 +20,27 @@ export const todosFixture: Todo[] = [
   { id: 203, userId: 2, title: 't3', completed: true },
   { id: 204, userId: 2, title: 't4', completed: true },
 ];
+
+export const userDetailFixture: UserDetail = {
+  id: 1,
+  name: 'Ada Lovelace',
+  username: 'ada',
+  email: 'ada@example.com',
+  phone: '555-1234',
+  website: 'ada.dev',
+  address: {
+    street: '10 Math Lane',
+    suite: 'Apt 1',
+    city: 'London',
+    zipcode: 'NW1 1AA',
+    geo: { lat: '51.5', lng: '-0.1' },
+  },
+  company: {
+    name: 'Analytical Engines',
+    catchPhrase: 'Computing the future',
+    bs: 'algorithmic synergy',
+  },
+};
+
+export const userPostsFixture = postsFixture.filter((p) => p.userId === 1);
+export const userTodosFixture = todosFixture.filter((t) => t.userId === 1);
